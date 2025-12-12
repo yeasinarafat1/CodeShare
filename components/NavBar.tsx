@@ -26,7 +26,7 @@ const Navbar: React.FC = () => {
 
           <div className="flex space-x-2">
             <Link
-              href="/"
+              href="/new"
               className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 isActive('/') 
                   ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.15)]' 
@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
             </Link>
             
             <Link
-              href="/browse"
+              href="/"
               className={`flex items-center space-x-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 isActive('/browse') 
                   ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
@@ -47,8 +47,8 @@ const Navbar: React.FC = () => {
             >
               <List size={16} />
               <span className="hidden sm:inline">Browse</span>
-              <UserAvatar/>
             </Link>
+              <UserButton/>
           </div>
         </div>
       </div>

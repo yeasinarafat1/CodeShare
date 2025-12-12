@@ -1,6 +1,8 @@
 export enum SupportedLanguage {
   JAVASCRIPT = 'javascript',
   TYPESCRIPT = 'typescript',
+  // JSX = 'jsx', // New
+  // TSX = 'tsx', // New
   PYTHON = 'python',
   JAVA = 'java',
   CPP = 'cpp',

@@ -21,7 +21,7 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
 
 interface EditorWrapperProps {
   code: string;
-  language: SupportedLanguage;
+  language: string;
   onChange?: (value: string | undefined) => void;
   readOnly?: boolean;
   height?: string;
@@ -36,17 +36,45 @@ const EditorWrapper: React.FC<EditorWrapperProps> = ({
 }) => {
   const [copied, setCopied] = React.useState(false);
 
+  // Helper to map your Enum to Monaco's expected Language ID and File Extension
+  // This is crucial for TSX/JSX tag parsing
+  const getEditorConfig = (lang: string) => {
+    switch (lang.toLowerCase()) {
+      case 'jsx':
+        return { language: 'javascript', path: 'file.jsx' };
+      case 'tsx':
+        return { language: 'typescript', path: 'file.tsx' };
+      case 'typescript':
+        return { language: 'typescript', path: 'file.ts' };
+      case 'javascript':
+        return { language: 'javascript', path: 'file.js' };
+      default:
+        return { language: lang, path: `file.${lang}` };
+    }
+  };
+
+  const { language: monacoLanguage, path: monacoPath } = getEditorConfig(language);
+
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editor.updateOptions({
       fontFamily: "'Fira Code', 'Cascadia Code', Consolas, monospace",
       fontLigatures: true,
       scrollBeyondLastLine: false,
-      minimap: { enabled: false }, // Cleaner look without minimap by default
+      minimap: { enabled: false },
       smoothScrolling: true,
       cursorBlinking: "smooth",
       cursorSmoothCaretAnimation: "on",
       padding: { top: 16, bottom: 16 },
     });
+    
+    // Optional: Configure compiler options for TSX to suppress some errors if needed
+    if (language === 'tsx' || language === 'typescript') {
+       monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+         jsx: monaco.languages.typescript.JsxEmit.React,
+         target: monaco.languages.typescript.ScriptTarget.ESNext,
+         allowNonTsExtensions: true,
+       });
+    }
   };
 
   const copyToClipboard = async () => {
@@ -84,7 +112,8 @@ const EditorWrapper: React.FC<EditorWrapperProps> = ({
       <div className="relative">
         <Editor
           height={height}
-          language={language}
+          path={monacoPath} // Setting path is required for proper JSX/TSX syntax highlighting
+          language={monacoLanguage}
           value={code}
           theme="vs-dark"
           onChange={onChange}
