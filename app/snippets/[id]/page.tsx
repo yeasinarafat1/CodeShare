@@ -3,9 +3,10 @@ import React from 'react';
 import Link from 'next/link';
 import { Clock, Code, ArrowLeft, AlertCircle } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 
 import EditorWrapper from '@/components/EditorWrapper';
-import { getSnippetBySlug } from '@/lib/actions/snipets';
+import { getSnippetBySlug, checkIfSnippetSaved } from '@/lib/actions/snipets';
 import SnippetActions from '@/components/SnippetActions';
 
 interface PageProps {
@@ -17,6 +18,9 @@ interface PageProps {
 const ViewSnippetPage = async ({ params }: PageProps) => {
   const { id: slug } = await params;
   
+  // Get current user
+  const { userId } = await auth();
+  
   // Fetch snippet on server
   const result = await getSnippetBySlug(slug);
   
@@ -26,6 +30,16 @@ const ViewSnippetPage = async ({ params }: PageProps) => {
   }
   
   const snippet = result.data;
+  
+  // Check if current user is the owner
+  const isOwner = userId === snippet.user_id;
+  
+  // Check if snippet is saved by current user
+  let isSaved = false;
+  if (userId && !isOwner) {
+    const savedResult = await checkIfSnippetSaved(snippet.id);
+    isSaved = savedResult.isSaved;
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -51,7 +65,12 @@ const ViewSnippetPage = async ({ params }: PageProps) => {
             </div>
           </div>
 
-          <SnippetActions snippet={snippet} />
+          <SnippetActions 
+            snippet={snippet} 
+            currentUserId={userId}
+            isOwner={isOwner}
+            isSaved={isSaved}
+          />
         </div>
       </div>
 

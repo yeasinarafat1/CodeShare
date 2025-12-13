@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/drizzle"; // Adjust path to your db connection file
-import { snippets } from "@/db/schema"; // Adjust path to your schema file
+import { SavedSnippets, snippets } from "@/db/schema"; // Adjust path to your schema file
 import { revalidatePath } from "next/cache";
 import { generateSlug } from "../utils";
 import { getUserDetails, getUserId } from "./user";
@@ -142,5 +142,86 @@ export async function updateSnippet(
   } catch (error) {
     console.error("Error updating snippet:", error);
     return { success: false, error: "Failed to update snippet" };
+  }
+}
+
+export const saved_snippet=async(slug:string)=>{
+  try {
+    const userId=await getUserId();
+    const [newSavedSnippet] = await db.insert(SavedSnippets).values({
+      user_id: userId.userId || '',
+      slug,
+    }).returning();
+    return { success: true, data: newSavedSnippet };
+  } catch (error) {
+    console.error("Error saving snippet:", error);
+    return { success: false, error: "Failed to save snippet" };
+  }
+}
+export const remove_saved_snippet=async(snippet_id:string)=>{
+  try {
+    const userId=await getUserId();
+    const { eq,and } = await import("drizzle-orm");
+    await db.delete(SavedSnippets).where(and(
+      eq(SavedSnippets.slug, snippet_id),
+      eq(SavedSnippets.user_id, userId.userId || ''),
+    ));
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing saved snippet:", error);
+    return { success: false, error: "Failed to remove saved snippet" };
+  }
+}
+export async function checkIfSnippetSaved(slug: string) {
+  try {
+    const userId = await getUserId();
+    const { eq, and } = await import("drizzle-orm");
+    const [savedSnippet] = await db.select().from(SavedSnippets).where(and(
+      eq(SavedSnippets.slug, slug),
+      eq(SavedSnippets.user_id, userId.userId || ''),
+    ));
+    return { isSaved: !!savedSnippet };
+  }
+  catch (error) {
+    console.error("Error checking if snippet is saved:", error);
+    return { isSaved: false };
+  }
+}
+// Server action to get saved snippets for current user
+export async function getSavedSnippets() {
+  try {
+    const userId = await getUserId();
+    const { eq, and } = await import("drizzle-orm");
+    const savedSnippets = await db.select().from(SavedSnippets).where(and(
+     
+      eq(SavedSnippets.user_id, userId.userId || ''),
+    ));
+    return { success: true, data: savedSnippets };
+  } catch (error) {
+    console.error("Error fetching saved snippets:", error);
+    return { success: false, error: "Failed to fetch saved snippets" };
+  }
+}
+
+export async function getSavedSnippetsWithDetails() {
+  try {
+    const userId = await getUserId();
+    const { eq, and, desc } = await import("drizzle-orm");
+    
+    const savedSnippets = await db.select({
+      snippet: snippets,
+    })
+    .from(SavedSnippets)
+    .innerJoin(
+      snippets,
+      eq(SavedSnippets.slug, snippets.slug) // Join on ID, not slug
+    )
+    .where(eq(SavedSnippets.user_id, userId.userId || ''))
+    .orderBy(desc(SavedSnippets.savedAt)); // Optional: order by save date
+    
+    return { success: true, data: savedSnippets.map(item => item.snippet) };
+  } catch (error) {
+    console.error("Error fetching saved snippets:", error);
+    return { success: false, error: "Failed to fetch saved snippets" };
   }
 }

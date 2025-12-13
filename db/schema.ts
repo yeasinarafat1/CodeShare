@@ -38,3 +38,10 @@ export const snippets = pgTable('snippets', {
 // Type inference for TypeScript
 export type Snippet = typeof snippets.$inferSelect;
 export type NewSnippet = typeof snippets.$inferInsert;
+export const SavedSnippets = pgTable('saved_snippets', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  user_id: varchar('user_id', { length: 255 }).notNull(),
+  slug:varchar('slug', { length: 255 }).notNull(),
+  savedAt: timestamp('saved_at').notNull().defaultNow(),
+});
+export type SavedSnippet = typeof SavedSnippets.$inferSelect;

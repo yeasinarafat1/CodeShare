@@ -56,7 +56,7 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
   return (
     <>
       <Link
-        href={`/snippet/${snippet.slug}`}
+        href={`/snippets/${snippet.slug}`}
         className="group relative flex flex-col bg-gray-900/40 backdrop-blur-sm border border-white/5 rounded-2xl p-5 hover:bg-gray-800/60 hover:border-blue-500/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10"
       >
         <div className="flex items-start justify-between mb-4">
