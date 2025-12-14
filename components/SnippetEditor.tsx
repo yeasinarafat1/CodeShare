@@ -39,7 +39,7 @@ const SnippetEditor: React.FC<SnippetEditorProps> = ({ userId }) => {
         language,
         code
       });
-      router.push(`/snippet/${snippet.slug}`);
+      router.push(`/snippets/${snippet.slug}`);
     } catch (error) {
       console.error("Failed to save", error);
       alert("Failed to save snippet. Please try again.");

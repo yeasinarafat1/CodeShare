@@ -54,7 +54,7 @@ const SnippetActions: React.FC<SnippetActionsProps> = ({ snippet, currentUserId,
     try {
       if (isSaved) {
         // Remove from saved
-        const result = await remove_saved_snippet(snippet.slug);
+        const result = await remove_saved_snippet(snippet.id);
         if (result.success) {
           setIsSaved(false);
           router.refresh();
@@ -63,7 +63,7 @@ const SnippetActions: React.FC<SnippetActionsProps> = ({ snippet, currentUserId,
         }
       } else {
         // Save snippet
-        const result = await saved_snippet(snippet.slug);
+        const result = await saved_snippet(snippet.id);
         if (result.success) {
           setIsSaved(true);
           router.refresh();

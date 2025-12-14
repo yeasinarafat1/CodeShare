@@ -1,3 +1,0 @@
-CREATE TYPE "public"."language" AS ENUM('javascript', 'typescript', 'python', 'java', 'cpp', 'c', 'csharp', 'go', 'rust', 'php', 'ruby', 'swift', 'kotlin', 'html', 'css', 'sql', 'bash', 'json', 'markdown', 'yaml');--> statement-breakpoint
-ALTER TABLE "snippets" ALTER COLUMN "language" SET DATA TYPE "public"."language" USING "language"::"public"."language";--> statement-breakpoint
-ALTER TABLE "snippets" ADD COLUMN "user_id" varchar(255) NOT NULL;

@@ -1,1 +1,0 @@
-ALTER TABLE "snippets" ADD COLUMN "author_name" varchar(255) NOT NULL;
