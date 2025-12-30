@@ -68,7 +68,7 @@ const SavedSnippetsPage = async () => {
           </div>
         ) : (
           snippets.map((snippet) => (
-            <SnipetCard key={snippet.id} snippet={snippet} showActions={false} />
+            <SnipetCard key={snippet.id} snippet={snippet} showActions={false} showUnsave={true} />
           ))
         )}
       </div>

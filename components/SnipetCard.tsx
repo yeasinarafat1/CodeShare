@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import { Snippet } from "@/db/schema";
-import { deleteSnippet } from "@/lib/actions/snipets";
-import { getLanguageColor, timeAgo } from "@/lib/utils";
-import { FileCode, Hash, Edit2, Trash2, AlertTriangle } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Snippet } from '@/db/schema';
+import { deleteSnippet, remove_saved_snippet } from '@/lib/actions/snipets';
+import { getLanguageColor, timeAgo } from '@/lib/utils';
+import { FileCode, Hash, Edit2, Trash2, AlertTriangle, BookmarkX } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 interface SnippetCardProps {
   snippet: Snippet;
   showActions?: boolean;
+  showUnsave?: boolean; // New prop for saved snippets
 }
 
-const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
+const SnippetCard = ({ snippet, showActions = false, showUnsave = false }: SnippetCardProps) => {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -27,15 +28,24 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
-      const result = await deleteSnippet(snippet.id);
+      let result;
+      if (showUnsave) {
+        // Unsave the snippet
+        result = await remove_saved_snippet(snippet.id);
+      } else {
+        // Delete the snippet
+        result = await deleteSnippet(snippet.id);
+      }
+      
       if (result.success) {
         setShowDeleteDialog(false);
-        setShowDeleteDialog(false);
         router.refresh();
+      } else {
+        alert(result.error || 'Operation failed');
       }
     } catch (error) {
-      console.error("Failed to delete snippet:", error);
-      alert("Failed to delete snippet");
+      console.error('Failed to perform action:', error);
+      alert('An error occurred');
     } finally {
       setIsDeleting(false);
     }
@@ -50,7 +60,7 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/snippet/${snippet.slug}/edit`);
+    router.push(`/snippets/edit/${snippet.slug}`);
   };
 
   return (
@@ -68,7 +78,7 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
               <Hash size={10} className="mr-1" />
               {snippet.slug}
             </div>
-
+            
             {showActions && (
               <div className="flex items-center gap-1">
                 <button
@@ -88,20 +98,27 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
                 </button>
               </div>
             )}
+            
+            {showUnsave && (
+              <button
+                onClick={handleDeleteClick}
+                disabled={isDeleting}
+                className="p-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 hover:text-yellow-300 rounded-md transition-colors disabled:opacity-50"
+                title="Remove from saved"
+              >
+                <BookmarkX size={14} />
+              </button>
+            )}
           </div>
         </div>
-
+        
         <h2 className="text-lg font-semibold text-gray-200 mb-2 line-clamp-1 group-hover:text-white transition-colors">
           {snippet.title}
         </h2>
-
+        
         <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between text-sm text-gray-400">
           <span className="flex items-center">
-            <div
-              className={`w-2 h-2 rounded-full mr-2 ${getLanguageColor(
-                snippet.language
-              )}`}
-            ></div>
+            <div className={`w-2 h-2 rounded-full mr-2 ${getLanguageColor(snippet.language)}`}></div>
             {snippet.language}
           </span>
           <span className="text-xs opacity-70">
@@ -112,11 +129,11 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
 
       {/* Delete Confirmation Dialog */}
       {showDeleteDialog && (
-        <div
+        <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4"
           onClick={handleCancelDelete}
         >
-          <div
+          <div 
             className="bg-gray-900 border border-red-500/20 rounded-2xl p-6 max-w-md w-full shadow-2xl"
             onClick={(e) => {
               e.preventDefault();
@@ -129,18 +146,14 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
               </div>
               <h3 className="text-xl font-bold text-white">Delete Snippet</h3>
             </div>
-
+            
             <p className="text-gray-300 mb-2">
-              Are you sure you want to delete{" "}
-              <span className="font-semibold text-white">
-                "{snippet.title}"
-              </span>
-              ?
+              Are you sure you want to delete <span className="font-semibold text-white">"{snippet.title}"</span>?
             </p>
             <p className="text-gray-400 text-sm mb-6">
               This action cannot be undone.
             </p>
-
+            
             <div className="flex gap-3">
               <button
                 onClick={handleCancelDelete}
@@ -152,9 +165,13 @@ const SnippetCard = ({ snippet, showActions = false }: SnippetCardProps) => {
               <button
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
-                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`flex-1 px-4 py-2.5 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  showUnsave 
+                    ? 'bg-yellow-600 hover:bg-yellow-500' 
+                    : 'bg-red-600 hover:bg-red-500'
+                }`}
               >
-                {isDeleting ? "Deleting..." : "Delete"}
+                {isDeleting ? (showUnsave ? 'Removing...' : 'Deleting...') : (showUnsave ? 'Remove' : 'Delete')}
               </button>
             </div>
           </div>

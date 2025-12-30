@@ -1,9 +1,10 @@
-// app/snippets/[id]/page.tsx (Server Component)
+// app/snippets/[id]/page.tsx
 import React from 'react';
 import Link from 'next/link';
-import { Clock, Code, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Clock, Code, ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
+import { Metadata } from 'next'; // 1. Import Metadata type
 
 import EditorWrapper from '@/components/EditorWrapper';
 import { getSnippetBySlug, checkIfSnippetSaved } from '@/lib/actions/snipets';
@@ -15,26 +16,46 @@ interface PageProps {
   }>;
 }
 
+// 2. Add generateMetadata to handle SEO and Social Share previews
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  
+  // Use the same fetch function (Next.js dedupes this automatically)
+  const result = await getSnippetBySlug(id);
+
+  if (!result.success || !result.data) {
+    return {
+      title: 'Snippet not found',
+    };
+  }
+
+  const snippet = result.data;
+
+  return {
+    title: snippet.title,
+    description: `View this ${snippet.language} code snippet created by ${snippet.author_name}`,
+    openGraph: {
+      title: snippet.title,
+      description: `Programming Language: ${snippet.language} | Author: ${snippet.author_name}`,
+      // If you add an opengraph-image.tsx later, it will automatically append here
+    },
+  };
+}
+
 const ViewSnippetPage = async ({ params }: PageProps) => {
   const { id: slug } = await params;
   
-  // Get current user
   const { userId } = await auth();
   
-  // Fetch snippet on server
   const result = await getSnippetBySlug(slug);
   
-  // If snippet not found, show 404
   if (!result.success || !result.data) {
     notFound();
   }
   
   const snippet = result.data;
-  
-  // Check if current user is the owner
   const isOwner = userId === snippet.user_id;
   
-  // Check if snippet is saved by current user
   let isSaved = false;
   if (userId && !isOwner) {
     const savedResult = await checkIfSnippetSaved(snippet.id);

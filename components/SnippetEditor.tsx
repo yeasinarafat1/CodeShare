@@ -9,21 +9,30 @@ import { SupportedLanguage } from '@/app/types';
 import { LANGUAGE_SNIPPETS } from '@/constant';
 import EditorWrapper from '@/components/EditorWrapper';
 import { createSnippet } from '@/services/snippetService';
+import { updateSnippet } from '@/lib/actions/snipets';
+import { Snippet } from '@/db/schema';
 
 interface SnippetEditorProps {
   userId: string | null;
+  snippet?: Snippet; // Optional - if provided, we're editing
+  isEditing?: boolean;
 }
 
-const SnippetEditor: React.FC<SnippetEditorProps> = ({ userId }) => {
+const SnippetEditor: React.FC<SnippetEditorProps> = ({ userId, snippet, isEditing = false }) => {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [language, setLanguage] = useState<SupportedLanguage>(SupportedLanguage.JAVASCRIPT);
-  const [code, setCode] = useState(LANGUAGE_SNIPPETS[SupportedLanguage.JAVASCRIPT]);
+  const [title, setTitle] = useState(snippet?.title || '');
+  const [language, setLanguage] = useState<SupportedLanguage>(
+    //@ts-ignore
+    snippet?.language || SupportedLanguage.JAVASCRIPT
+  );
+  const [code, setCode] = useState(
+    snippet?.code || LANGUAGE_SNIPPETS[SupportedLanguage.JAVASCRIPT]
+  );
   const [isSaving, setIsSaving] = useState(false);
     
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLang = e.target.value as SupportedLanguage;
-    if (code === LANGUAGE_SNIPPETS[language] || code.trim() === '') {
+    if (!isEditing && (code === LANGUAGE_SNIPPETS[language] || code.trim() === '')) {
       setCode(LANGUAGE_SNIPPETS[newLang]);
     }
     setLanguage(newLang);
@@ -34,12 +43,28 @@ const SnippetEditor: React.FC<SnippetEditorProps> = ({ userId }) => {
 
     setIsSaving(true);
     try {
-      const snippet = await createSnippet({
-        title,
-        language,
-        code
-      });
-      router.push(`/snippets/${snippet.slug}`);
+      if (isEditing && snippet) {
+        // Update existing snippet
+        const result = await updateSnippet(snippet.id, {
+          title,
+          language,
+          code,
+        });
+        
+        if (result.success && result.data) {
+          router.push(`/snippets/${result.data.slug}`);
+        } else {
+          alert(result.error || 'Failed to update snippet');
+        }
+      } else {
+        // Create new snippet
+        const newSnippet = await createSnippet({
+          title,
+          language,
+          code,
+        });
+        router.push(`/snippets/${newSnippet.slug}`);
+      }
     } catch (error) {
       console.error("Failed to save", error);
       alert("Failed to save snippet. Please try again.");
@@ -115,7 +140,7 @@ const SnippetEditor: React.FC<SnippetEditorProps> = ({ userId }) => {
           ) : (
             <Save size={20} />
           )}
-          <span>{isSaving ? 'Saving...' : 'Save & Share Snippet'}</span>
+          <span>{isSaving ? 'Saving...' : (isEditing ? 'Update Snippet' : 'Save & Share Snippet')}</span>
         </button>
       </div>
     </>
