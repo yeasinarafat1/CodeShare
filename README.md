@@ -1,36 +1,208 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+# 🚀 CodeShare — Share Code Snippets with Links
+
+CodeShare is a full-stack web application that lets users **create, save, manage, and share code snippets** using public links. Each user has a personal dashboard, and only the owner can edit or delete their snippets.
+
+Built with **Next.js App Router, TypeScript, Tailwind CSS, Clerk authentication, Drizzle ORM, and Neon PostgreSQL**.
+
+---
+
+## ✨ Features
+
+* 🔐 Authentication with **Clerk**
+* 🧾 Create, edit, delete code snippets
+* 🔗 Share snippets using public links
+* 📁 Personal dashboard (`/snippets`)
+* 🔖 Saved snippets page (`/saved`)
+* 🧠 Monaco-based code editor
+* 💾 Database powered by **Neon Postgres + Drizzle ORM**
+* ⚡ Server Actions for DB operations
+* 🎨 Clean UI with **Tailwind CSS**
+* 🚀 Deployed on **Vercel**
+
+---
+
+## 🛠 Tech Stack
+
+* **Framework:** Next.js (App Router)
+* **Language:** TypeScript
+* **Auth:** Clerk
+* **Database:** Neon (PostgreSQL)
+* **ORM:** Drizzle
+* **Styling:** Tailwind CSS
+* **Editor:** Monaco Editor
+* **Deployment:** Vercel
+
+---
+
+## 📂 Project Structure (Important Parts)
+
+```txt
+codeshare/
+├── app/
+│   ├── page.tsx                 # Landing page
+│   ├── new/                     # Create snippet
+│   ├── saved/                   # Saved snippets
+│   ├── snippets/                # Snippet routes
+│   │   ├── page.tsx             # My snippets
+│   │   ├── [id]/page.tsx        # View snippet
+│   │   └── edit/[id]/page.tsx   # Edit snippet
+│   ├── sign-in/                 # Clerk sign in
+│   └── sign-up/                 # Clerk sign up
+│
+├── components/
+│   ├── SnippetEditor.tsx
+│   ├── SnippetCard.tsx
+│   ├── SnippetActions.tsx
+│   ├── EditorWrapper.tsx
+│   └── NavBar.tsx
+│
+├── db/
+│   ├── drizzle.ts               # DB connection
+│   └── schema.ts                # Tables
+│
+├── lib/
+│   ├── actions/
+│   │   ├── snipets.ts           # Server actions (CRUD)
+│   │   └── user.ts
+│   └── utils.ts
+│
+├── services/
+│   └── snippetService.ts        # Business logic layer
+│
+├── migrations/                  # Drizzle migrations
+└── drizzle.config.ts
+```
+
+---
+
+## 🌐 Routes
+
+| Route                 | Description             |
+| --------------------- | ----------------------- |
+| `/`                   | Landing page            |
+| `/snippets`           | Your snippets dashboard |
+| `/snippets/[id]`      | View snippet            |
+| `/snippets/edit/[id]` | Edit snippet            |
+| `/new`                | Create snippet          |
+| `/saved`              | Saved snippets          |
+| `/sign-in`            | Login                   |
+| `/sign-up`            | Register                |
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file:
+
+```env
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_***************
+CLERK_SECRET_KEY=sk_***************
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
+
+
+# Neon Database
+DATABASE_URL=postgresql://user:password@host/db?sslmode=require
+```
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/your-username/codeshare.git
+cd codeshare
+npm install
+```
+
+Run dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🗄 Database Setup (Drizzle)
 
-To learn more about Next.js, take a look at the following resources:
+Push schema:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx drizzle-kit push
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Or migrate:
 
-## Deploy on Vercel
+```bash
+npx drizzle-kit generate
+npx drizzle-kit migrate
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧠 Data Model (Simplified)
+
+* `users`
+* `snippets`
+
+  * id
+  * title
+  * code
+  * language
+  * userId
+  * createdAt
+
+---
+
+## 🔁 Core Flow
+
+1. User logs in with **Clerk**
+2. Creates snippet in Monaco editor
+3. Snippet is stored in **Neon Postgres**
+4. A public URL is generated
+5. Anyone can view the snippet
+6. Only the owner can edit/delete
+
+---
+
+## 🔗 Example Public Link
+
+```
+https://codeshare.vercel.app/snippets/FfyPQefi
+```
+
+---
+
+## 🚧 Future Improvements
+
+* ⭐ Star / like snippets
+* 🔍 Search & filter
+* 📂 Folders / collections
+* 🌈 Multiple themes
+* 🌍 Public explore page
+
+---
+
+## 🧑‍💻 Author
+
+**Yeasin Arafat**
+
+---
+
+## 📜 License
+
+MIT License
+
