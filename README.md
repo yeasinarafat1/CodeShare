@@ -153,19 +153,39 @@ npx drizzle-kit migrate
 
 ---
 
+
 ## 🧠 Data Model (Simplified)
 
-* `users`
-* `snippets`
+-   `snippets`
+    
+    -   id
+        
+    -   slug
+        
+    -   title
+        
+    -   code
+        
+    -   language
+        
+    -   userId
+        
+    -   authorName
+        
+    -   createdAt
+        
+-   `saved_snippets`
+    
+    -   id
+        
+    -   userId
+        
+    -   snippetId
+        
+    -   savedAt
+        
 
-  * id
-  * title
-  * code
-  * language
-  * userId
-  * createdAt
-
----
+----------
 
 ## 🔁 Core Flow
 
