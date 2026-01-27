@@ -1,228 +1,132 @@
 
+# 🚀 CodeShare
 
-# 🚀 CodeShare — Share Code Snippets with Links
+![Project Banner](./public/readme/banner.png)
 
-CodeShare is a full-stack web application that lets users **create, save, manage, and share code snippets** using public links. Each user has a personal dashboard, and only the owner can edit or delete their snippets.
+> **A Code Snippet Manager for Competitive Programmers & Developers.**
 
-Built with **Next.js App Router, TypeScript, Tailwind CSS, Clerk authentication, Drizzle ORM, and Neon PostgreSQL**.
+[![Live Demo](https://img.shields.io/badge/🚀_View_Live_Demo-Visit_App-blue?style=for-the-badge)](https://code-share-y.vercel.app) 
+[![GitHub](https://img.shields.io/badge/📂_View_Source_Code-GitHub-black?style=for-the-badge)](https://github.com/yeasinarafat1/CodeShare)
 
 ---
 
-## ✨ Features
+## 💡 The Problem & Solution
+As a Competitive Programmer, I often found myself rewriting the same algorithms (Dijkstra, Segment Trees, BFS) or losing track of my old solutions. 
 
-* 🔐 Authentication with **Clerk**
-* 🧾 Create, edit, delete code snippets
-* 🔗 Share snippets using public links
-* 📁 Personal dashboard (`/snippets`)
-* 🔖 Saved snippets page (`/saved`)
-* 🧠 Monaco-based code editor
-* 💾 Database powered by **Neon Postgres + Drizzle ORM**
-* ⚡ Server Actions for DB operations
-* 🎨 Clean UI with **Tailwind CSS**
-* 🚀 Deployed on **Vercel**
+**CodeShare** solves this by providing a personal cloud library where developers can:
+1.  **Store** their reusable algorithms with syntax highlighting.
+2.  **Access** them from any device during practice sessions.
+3.  **Share** solutions with peers via public links.
+
+---
+
+## 📸 Screenshots
+| **Dashboard** |
+
+![Dashboard Screenshot](./public/readme/overview.png) |  **Code Editor** |![Editor Screenshot](./public/readme/editor.png) 
+
+---
+
+## ✨ Key Features
+* **🔐 Secure Auth:** Complete user management via **Clerk** (Social Login + Session Handling).
+* **⚡ High Performance:** Built on **Next.js App Router** with Server Actions for zero-API-latency interactions.
+* **🎨 Developer UX:** Dark-mode enabled interface with **Monaco Editor** (VS Code's engine) for a native coding experience.
+* **🛡️ Type Safety:** Full end-to-end type safety using **TypeScript** and **Drizzle ORM**.
+* **🌍 Global Access:** Snippets are publicly shareable via unique generated slugs.
 
 ---
 
 ## 🛠 Tech Stack
 
-* **Framework:** Next.js (App Router)
-* **Language:** TypeScript
-* **Auth:** Clerk
-* **Database:** Neon (PostgreSQL)
-* **ORM:** Drizzle
-* **Styling:** Tailwind CSS
-* **Editor:** Monaco Editor
-* **Deployment:** Vercel
+| Category | Technology | Reason for Choice |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 14 (App Router) | For Server Components and SEO-friendly routing. |
+| **Database** | Neon (PostgreSQL) | Serverless Postgres that scales to zero when not in use. |
+| **ORM** | Drizzle | Lightweight, type-safe SQL wrapper (faster than Prisma). |
+| **Auth** | Clerk | Best-in-class security without maintaining custom JWTs. |
+| **Styling** | Tailwind CSS | Rapid UI development and consistent design system. |
 
 ---
 
-## 📂 Project Structure (Important Parts)
+## 📂 Project Structure
 
-```txt
+```bash
 codeshare/
-├── app/
-│   ├── page.tsx                 # Landing page
-│   ├── new/                     # Create snippet
-│   ├── saved/                   # Saved snippets
-│   ├── snippets/                # Snippet routes
-│   │   ├── page.tsx             # My snippets
-│   │   ├── [id]/page.tsx        # View snippet
-│   │   └── edit/[id]/page.tsx   # Edit snippet
-│   ├── sign-in/                 # Clerk sign in
-│   └── sign-up/                 # Clerk sign up
-│
-├── components/
-│   ├── SnippetEditor.tsx
-│   ├── SnippetCard.tsx
-│   ├── SnippetActions.tsx
-│   ├── EditorWrapper.tsx
-│   └── NavBar.tsx
-│
-├── db/
-│   ├── drizzle.ts               # DB connection
-│   └── schema.ts                # Tables
-│
-├── lib/
-│   ├── actions/
-│   │   ├── snipets.ts           # Server actions (CRUD)
-│   │   └── user.ts
-│   └── utils.ts
-│
-├── services/
-│   └── snippetService.ts        # Business logic layer
-│
-├── migrations/                  # Drizzle migrations
-└── drizzle.config.ts
-```
-
----
-
-## 🌐 Routes
-
-| Route                 | Description             |
-| --------------------- | ----------------------- |
-| `/`                   | Landing page            |
-| `/snippets`           | Your snippets dashboard |
-| `/snippets/[id]`      | View snippet            |
-| `/snippets/edit/[id]` | Edit snippet            |
-| `/new`                | Create snippet          |
-| `/saved`              | Saved snippets          |
-| `/sign-in`            | Login                   |
-| `/sign-up`            | Register                |
-
----
-
-## ⚙️ Environment Variables
-
-Create a `.env` file:
-
-```env
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_***************
-CLERK_SECRET_KEY=sk_***************
-
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
-NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-
-
-
-# Neon Database
-DATABASE_URL=postgresql://user:password@host/db?sslmode=require
-```
-
----
-
-## 📦 Installation
-
-```bash
-git clone https://github.com/your-username/codeshare.git
-cd codeshare
-npm install
-```
-
-Run dev server:
-
-```bash
-npm run dev
-```
-
-Open:
+├── app/                  # Next.js App Router
+│   ├── (auth)/           # Route groups for Sign-in/up
+│   ├── snippets/         # Protected snippet routes
+│   └── api/              # Webhooks
+├── db/                   # Database Schema & Migrations
+│   ├── schema.ts         # Drizzle Schema definitions
+├── lib/                  # Shared utilities
+│   ├── actions/          # Server Actions (Mutations)
+├── components/           # Reusable UI Components
+└── drizzle.config.ts     # DB Configuration
 
 ```
-http://localhost:3000
-```
-
----
-
-## 🗄 Database Setup (Drizzle)
-
-Push schema:
-
-```bash
-npx drizzle-kit push
-```
-
-Or migrate:
-
-```bash
-npx drizzle-kit generate
-npx drizzle-kit migrate
-```
-
----
-
-
-## 🧠 Data Model (Simplified)
-
--   `snippets`
-    
-    -   id
-        
-    -   slug
-        
-    -   title
-        
-    -   code
-        
-    -   language
-        
-    -   userId
-        
-    -   authorName
-        
-    -   createdAt
-        
--   `saved_snippets`
-    
-    -   id
-        
-    -   userId
-        
-    -   snippetId
-        
-    -   savedAt
-        
 
 ----------
 
-## 🔁 Core Flow
+## ⚙️ Getting Started
 
-1. User logs in with **Clerk**
-2. Creates snippet in Monaco editor
-3. Snippet is stored in **Neon Postgres**
-4. A public URL is generated
-5. Anyone can view the snippet
-6. Only the owner can edit/delete
+To run this project locally:
 
----
+1.  **Clone the repo**
+    
+    Bash
+    
+    ```
+    git clone [https://github.com/your-username/codeshare.git](https://github.com/your-username/codeshare.git)
+    cd codeshare
+    
+    ```
+    
+2.  **Install dependencies**
+    
+    Bash
+    
+    ```
+    npm install
+    
+    ```
+    
+3.  **Set up Environment Variables**
+    
+    Create a `.env` file in the root and add your keys:
+    
+    Code snippet
+    
+    ```
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+    CLERK_SECRET_KEY=sk_test_...
+    DATABASE_URL=postgresql://...
+    
+    ```
+    
+4.  **Push Database Schema**
+    
+    Bash
+    
+    ```
+    npx drizzle-kit push
+    
+    ```
+    
+5.  **Run the Server**
+    
+    Bash
+    
+    ```
+    npm run dev
+    
+    ```
+    
 
-## 🔗 Example Public Link
-
-```
-https://codeshare.vercel.app/snippets/FfyPQefi
-```
-
----
-
-## 🚧 Future Improvements
-
-* ⭐ Star / like snippets
-* 🔍 Search & filter
-* 📂 Folders / collections
-* 🌈 Multiple themes
-* 🌍 Public explore page
-
----
+----------
 
 ## 🧑‍💻 Author
 
-**Yeasin Arafat**
+**Yeasin Arafat** _Full Stack Developer & Competitive Programmer_ [LinkedIn Profile](https://www.linkedin.com/in/yeasinarafat27) | [GitHub Profile](https://github.com/yeasinarafat1)
 
----
 
-## 📜 License
-
-MIT License
-
+```
