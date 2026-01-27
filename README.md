@@ -61,7 +61,7 @@ As a Competitive Programmer, I often found myself rewriting the same algorithms 
 
 ---
 
-## 📂 Project Structure
+
 ## 📂 Project Structure
 
 ```bash
@@ -91,7 +91,8 @@ To run this project locally:
     Bash
     
     ```
-    git clone [https://github.com/your-username/codeshare.git](https://github.com/your-username/codeshare.git)
+    git clone https://github.com/yeasinarafat1/CodeShare
+
     cd codeshare
     
     ```
@@ -136,75 +137,9 @@ To run this project locally:
     
     ```
     
-├── app/                  # Next.js App Router
-│   ├── (auth)/           # Route groups for Sign-in/up
-│   ├── snippets/         # Protected snippet routes
-│   └── api/              # Webhooks
-├── db/                   # Database Schema & Migrations
-│   ├── schema.ts         # Drizzle Schema definitions
-├── lib/                  # Shared utilities
-│   ├── actions/          # Server Actions (Mutations)
-├── components/           # Reusable UI Components
-└── drizzle.config.ts     # DB Configuration
 
-```
 
-----------
 
-## ⚙️ Getting Started
-
-To run this project locally:
-
-1.  **Clone the repo**
-    
-    Bash
-    
-    ```
-    git clone [https://github.com/your-username/codeshare.git](https://github.com/your-username/codeshare.git)
-    cd codeshare
-    
-    ```
-    
-2.  **Install dependencies**
-    
-    Bash
-    
-    ```
-    npm install
-    
-    ```
-    
-3.  **Set up Environment Variables**
-    
-    Create a `.env` file in the root and add your keys:
-    
-    Code snippet
-    
-    ```
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-    CLERK_SECRET_KEY=sk_test_...
-    DATABASE_URL=postgresql://...
-    
-    ```
-    
-4.  **Push Database Schema**
-    
-    Bash
-    
-    ```
-    npx drizzle-kit push
-    
-    ```
-    
-5.  **Run the Server**
-    
-    Bash
-    
-    ```
-    npm run dev
-    
-    ```
-    
 
 ----------
 
@@ -213,4 +148,3 @@ To run this project locally:
 **Yeasin Arafat** _Full Stack Developer & Competitive Programmer_ [LinkedIn Profile](https://www.linkedin.com/in/yeasinarafat27) | [GitHub Profile](https://github.com/yeasinarafat1)
 
 
-```
