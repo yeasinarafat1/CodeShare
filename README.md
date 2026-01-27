@@ -64,7 +64,7 @@ As a Competitive Programmer, I often found myself rewriting the same algorithms 
 
 ## 📂 Project Structure
 
-```bash
+
 ```bash
 codeshare/
 ├── app/                  # Next.js App Router
