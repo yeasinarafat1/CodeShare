@@ -42,11 +42,6 @@ export async function getUserDetails() {
 
 // Alternative: Get just the userId (lighter weight)
 export async function getUserId() {
-  try {
-    const { userId } = await auth()
-    return { userId }
-  } catch (error) {
-    console.error('Error fetching user ID:', error)
-    return { userId: null }
-  }
+  const { userId } = await auth()
+  return { userId }
 }
